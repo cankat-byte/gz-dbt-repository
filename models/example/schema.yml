@@ -1,17 +1,8 @@
-with source as (
-  -- Burada source fonksiyonu ile ham veriye bağlanıyoruz
-  select * from {{ source('gz_raw_data', 'raw_gz_sales') }}
-),
+version: 2
 
-renamed as (
-  select
-    date_date,
-    orders_id,
-    pdt_id,
-    revenue,
-    quantity
-  from source
-)
-
--- En sonda, yukarıda temizlediğin 'renamed' CTE'sini çağırmalısın
-select * from renamed
+sources:
+  - name: gz_raw_data
+    database: cankat-my-new-project # Burası senin GCP projenin ID'si olmalı
+    schema: gz_raw_data
+    tables:
+      - name: raw_gz_sales
