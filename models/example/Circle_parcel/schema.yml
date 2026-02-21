@@ -1,0 +1,59 @@
+models:
+  - name: raw_cc_parcel
+    description: "parcel id, parcel tracking, priority, order time,purchase time, delivery time verilerini içerir"
+    columns:
+      - name: parcel id
+        description: parsel numarası
+        tests:
+          - unique
+          - not_null
+      - name: parcel tracking
+        description: parsel takip linki
+        tests:
+          - unique
+          - not_null
+      - name: priority
+        description: önem derecesi
+        tests:
+          - unique
+          - not_null
+      - name: order time
+        description: sipariş tarihi
+        tests:
+          - unique
+          - not_null
+      - name: purchase time
+        description: satın alma tarihi
+        tests:
+          - unique
+          - not_null
+      - name: delivery time
+        description: teslim tarihi
+        tests:
+          - unique
+          - not_null
+
+  - name: raw_cc_parcel_product
+    description: "parcel id,model name, quantity verilerini içerir"      
+    columns:
+      - name: parcel_id
+        desciption:  parsel numarası
+        tests:
+          - unique
+          - not_null
+      - name: model name
+        description: model ismi
+        tests:
+          - unique
+          - not_null
+      - name: quantity
+        description: sipariş miktarı
+        tests:
+          - unique
+          - not_null
+
+      - name: circle_parcel
+        +schema: parcel_dbt_dev
+
+
+       
