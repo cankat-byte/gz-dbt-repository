@@ -1,8 +1,9 @@
 version: 2
 
 sources:
-  - name: gz_raw_data
-    database: cankat-my-new-project # Burası senin GCP projenin ID'si olmalı
-    schema: gz_raw_data
+  - name: raw_data_circle # Kaynağa verdiğin takma ad
+    database: cankat-my-new-project # GCP Proje ID'n
+    schema: raw_data_circle # BigQuery'deki Dataset adın
     tables:
-      - name: raw_gz_sales
+      - name: raw_cc_parcel
+      - name: raw_cc_parcel_product
