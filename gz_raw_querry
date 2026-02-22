@@ -1,2 +1,0 @@
-SELECT * FROM `cankat-my-new-project.gz_raw_data.raw_gz_sales`
-where quantity = 2
