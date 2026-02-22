@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_data_circle # Kaynağa verdiğin takma ad
+    database: cankat-my-new-project # Proje ID'n
+    schema: raw_data_circle # BigQuery'deki Dataset adı
+    tables:
+      - name: raw_cc_parcel
+      - name: raw_cc_parcel_product

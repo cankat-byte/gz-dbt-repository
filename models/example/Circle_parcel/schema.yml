@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_cc_parcel  # birinci SQL dosyanın adı (Tire işaretine dikkat!)
+    description: "parcel id, parcel tracking, priority verilerini içerir"
+    columns:
+      - name: parcel_id  # Boşluk koyma (yerine alt çizgi olmalı)
+        description: "parsel numarası"
+        tests:
+          - not_null
+      - name: parcel_tracking
+        description: "parsel takip linki"
+      - name: priority
+        description: "öncelik"
+
+  - name: stg_cc_parcel_product # İkinci SQL dosyanın adı
+    description: "parcel id, model name, quantity verilerini içerir"      
+    columns:
+      - name: parcel_id
+        description: "parsel numarası"
+        tests:
+          - not_null
+      - name: model_name # Boşluk yerine alt çizgi
+        description: "model ismi"
+      - name: qty # SQL'de qty olarak tanımladıysan burası da öyle olmalı
+        description: "sipariş miktarı"
