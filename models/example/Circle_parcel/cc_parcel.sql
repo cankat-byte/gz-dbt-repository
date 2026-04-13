@@ -1,53 +1,55 @@
-{{ config(
-  materialized='table'
-) }}
+{{ config(materialized="table") }}
 
 -- Önce ürün miktarlarını kargo bazında özetliyoruz
-WITH nb_products_parcel AS (
-  SELECT
-    parcel_id,
-    SUM(qty) AS qty,
-    COUNT(DISTINCT model_name) AS nb_products
-  FROM {{ ref('stg_cc_parcel_product') }}
-  GROUP BY 1
-)
+with
+    nb_products_parcel as (
+        select parcel_id, sum(qty) as qty, count(distinct model_name) as nb_products
+        from {{ ref("stg_cc_parcel_product") }}
+        group by 1
+    )
 
-SELECT
-  -- Anahtar ve Paket Bilgileri
-  p.parcel_id,
-  p.parcel_tracking,
-  p.priority,
+select
+    -- Anahtar ve Paket Bilgileri
+    p.parcel_id,
+    p.parcel_tracking,
+    p.priority,
 
-  -- Tarihler (Staging'de düzelttiğimiz temiz tarihleri alıyoruz)
-  p.date_purchase,
-  p.date_shipping,
-  p.date_delivery,
+    -- Tarihler (Staging'de düzelttiğimiz temiz tarihleri alıyoruz)
+    p.date_purchase,
+    p.date_shipping,
+    p.date_delivery,
 
-  -- Ay Bilgisi
-  EXTRACT(MONTH FROM p.date_purchase) AS month_purchase,
+    -- Ay Bilgisi
+    extract(month from p.date_purchase) as month_purchase,
 
-  -- Durum (Status) KPI
-  CASE
-    WHEN p.date_shipping IS NULL THEN 'Devam Ediyor'
-    WHEN p.date_delivery IS NULL THEN 'Taşınıyor'
-    WHEN p.date_delivery IS NOT NULL THEN 'Teslim Edildi'
-    ELSE 'Diğer'
-  END AS status,
+    -- Durum (Status) KPI 
+    case
+        when p.date_shipping is null
+        then 'Devam Ediyor'
+        when p.date_delivery is null
+        then 'Taşınıyor'
+        when p.date_delivery is not null
+        then 'Teslim Edildi'
+        else 'Diğer'
+    end as status,
 
-  -- Zaman Farkları KPI (Gün bazında)
-  DATE_DIFF(p.date_shipping, p.date_purchase, DAY) AS expedition_time,
-  DATE_DIFF(p.date_delivery, p.date_shipping, DAY) AS transport_time,
-  DATE_DIFF(p.date_delivery, p.date_purchase, DAY) AS delivery_time,
+    -- Zaman Farkları KPI (Gün bazında)
+    date_diff(p.date_shipping, p.date_purchase, day) as expedition_time,
+    date_diff(p.date_delivery, p.date_shipping, day) as transport_time,
+    date_diff(p.date_delivery, p.date_purchase, day) as delivery_time,
 
-  -- Gecikme KPI (5 günden fazla sürenler için 1, değilse 0)
-  CASE 
-    WHEN p.date_delivery IS NOT NULL AND DATE_DIFF(p.date_delivery, p.date_purchase, DAY) > 5 THEN 1 
-    ELSE 0 
-  END AS is_delayed,
+    -- Gecikme KPI (5 günden fazla sürenler için 1, değilse 0)
+    case
+        when
+            p.date_delivery is not null
+            and date_diff(p.date_delivery, p.date_purchase, day) > 5
+        then 1
+        else 0
+    end as is_delayed,
 
-  -- Ürün Metrikleri (CTE'den geliyor)
-  n.qty,
-  n.nb_products
+    -- Ürün Metrikleri (CTE'den geliyor)
+    n.qty,
+    n.nb_products
 
-FROM {{ ref('stg_cc_parcel') }} AS p
-LEFT JOIN nb_products_parcel AS n ON p.parcel_id = n.parcel_id
+from {{ ref("stg_cc_parcel") }} as p
+left join nb_products_parcel as n on p.parcel_id = n.parcel_id
